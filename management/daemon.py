@@ -20,7 +20,7 @@ from flask import Flask, request, render_template, abort, Response, send_from_di
 import auth, utils
 from mailconfig import get_mail_users, get_mail_users_ex, get_admins, add_mail_user, set_mail_password, remove_mail_user
 from mailconfig import get_mail_user_privileges, add_remove_mail_user_privilege
-from mailconfig import get_mail_aliases, get_mail_aliases_ex, get_mail_domains, add_mail_alias, remove_mail_alias
+from mailconfig import get_mail_aliases, get_mail_aliases_ex, get_mail_users_dom, get_mail_domains, add_mail_alias, remove_mail_alias
 from mfa import get_public_mfa_state, provision_totp, validate_totp_secret, enable_mfa, disable_mfa
 
 env = utils.load_environment()
@@ -188,6 +188,18 @@ def mail_users():
 		return json_response(get_mail_users_ex(env, with_archived=True))
 	else:
 		return "".join(x+"\n" for x in get_mail_users(env))
+# Return users of particular domain
+
+@app.route('/mail/userd')
+@authorized_personnel_only
+def mail_userd():
+	if request.args.get("domain", "") != "":
+		varb = request.args.get("domain", "")
+		return json_response(get_mail_users_dom(env, with_archived=varb))
+	else:
+		return "Invalid domain name"
+
+# Add users
 
 @app.route('/mail/users/add', methods=['POST'])
 @authorized_personnel_only

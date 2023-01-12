@@ -104,6 +104,15 @@ def get_mail_users(env):
 	c.execute('SELECT email FROM users')
 	users = [ row[0] for row in c.fetchall() ]
 	return utils.sort_email_addresses(users, env)
+#//////////////////////////////////////////////////////////////////
+def get_mail_users_dom(env, with_archived=""):
+
+
+	c = open_database(env)
+	c.execute('SELECT email, privileges FROM users where email like "%@'+with_archived+'"')
+	users = [ row[0] for row in c.fetchall() ]
+	return utils.sort_email_addresses(users, env)
+	#/////////////////////////////////////////////////////////////////////////////////
 
 def get_mail_users_ex(env, with_archived=False):
 	# Returns a complex data structure of all user accounts, optionally
